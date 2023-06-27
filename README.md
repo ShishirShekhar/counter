@@ -56,3 +56,9 @@ The Counter application allows you to create multiple counters, increment and de
 ## Contributing
 
 Contributions are welcome! If you have any ideas, improvements, or bug fixes, please open an issue or submit a pull request.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+Feel free to customize and add more sections as needed. Make sure to update the installation and usage instructions based on your project's specific setup.
