@@ -1,79 +1,70 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  increaseCounter,
+  decreaseCounter,
+  resetCounter,
+  setCounter,
+  setName,
+  removeCounter,
+} from "../redux/counter/countersAction";
 
-const Counter = ({ id, removeCounter }) => {
-  const [name, setName] = useState("Tally Counter");
-  const [counter, setCounter] = useState(0);
+const Counter = ({ id }) => {
   const [updateValue, setUpdateValue] = useState(false);
   const [updateName, setUpdateName] = useState(false);
   const [tempValue, setTempValue] = useState(0);
   const [tempName, setTempName] = useState("");
 
-  const increaseCounter = () => {
-    setCounter((prev) => ++prev);
-  };
+  const counter = useSelector((state) =>
+    state.counters.find((counter) => counter.id === id)
+  );
 
-  const decreaseCounter = () => {
-    setCounter((prev) => --prev);
-  };
+  const dispatch = useDispatch();
 
-  const resetCounter = () => {
-    setCounter(0);
-  };
-
-  const toggleValue = () => {
+  const toggleSet = () => {
     setUpdateValue((prev) => !prev);
+    tempValue !== 0 && dispatch(setCounter(id, parseInt(tempValue)));
+    setTempValue(0);
   };
 
   const toggleName = () => {
     setUpdateName((prev) => !prev);
-  };
-
-  const updateTempValue = (e) => {
-    setTempValue(e.target.value);
-  };
-
-  const updateTempName = (e) => {
-    setTempName(e.target.value);
-  };
-
-  const updateCounterValue = () => {
-    setCounter(tempValue);
-    toggleValue();
-  };
-
-  const updateCounterName = () => {
-    tempName ? setName(tempName) : setName("Tally Counter");
-    toggleName();
-  };
-
-  const closeCounter = () => {
-    removeCounter(id);
+    tempName !== "" && dispatch(setName(id, tempName));
+    setTempName("");
   };
 
   return (
     <div className="counter">
-      <h1 className="heading">{name}</h1>
-      <input type="number" value={counter} readOnly />
+      <h1 className="heading">{counter.name}</h1>
+      <input type="number" value={counter.counter} readOnly />
       <div className="row">
-        <button onClick={increaseCounter}>Increase</button>
-        <button onClick={decreaseCounter}>Decrease</button>
+        <button onClick={() => dispatch(increaseCounter(id))}>Increase</button>
+        <button onClick={() => dispatch(decreaseCounter(id))}>Decrease</button>
       </div>
       <div className="row">
         {updateValue ? (
           <div className="update" style={{ width: "6rem" }}>
-            <input type="number" value={tempValue} onChange={updateTempValue} />
-            <button onClick={updateCounterValue}>Set</button>
+            <input
+              type="number"
+              value={tempValue}
+              onChange={(e) => setTempValue(e.target.value)}
+            />
+            <button onClick={toggleSet}>Set</button>
           </div>
         ) : (
-          <button onClick={toggleValue}>Set</button>
+          <button onClick={toggleSet}>Set</button>
         )}
 
-        <button onClick={resetCounter}>Reset</button>
+        <button onClick={() => dispatch(resetCounter(id))}>Reset</button>
       </div>
       {updateName ? (
         <div className="update">
-          <input type="text" value={tempName} onChange={updateTempName} />
-          <button onClick={updateCounterName}>Set</button>
+          <input
+            type="text"
+            value={tempName}
+            onChange={(e) => setTempName(e.target.value)}
+          />
+          <button onClick={toggleName}>Set</button>
         </div>
       ) : (
         <button onClick={toggleName} style={{ width: "100%" }}>
@@ -81,7 +72,7 @@ const Counter = ({ id, removeCounter }) => {
         </button>
       )}
       <button
-        onClick={closeCounter}
+        onClick={() => dispatch(removeCounter(id))}
         className="close"
         style={{ width: "100%" }}
       >
